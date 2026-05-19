@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import NewListItem from '../NewListItem';
+import NewListItem from '../NewList/NewListItem';
 import './index.scss';
 import ListItem from '../ListItem/index';
 
@@ -9,16 +9,27 @@ type Props = {
   onReturn: () => void;
 };
 
-type ListItem = {
+type GroceryItem = {
   id: string;
   value: string;
+  completed: boolean;
 };
 
 export default function FocusedList({ listId, listName, onReturn }: Props) {
   const storageKey = `items-${listId}`;
-  const [items, setItems] = useState<ListItem[]>(() => {
+  const [items, setItems] = useState<GroceryItem[]>(() => {
     const saved = localStorage.getItem(storageKey);
-    return saved ? JSON.parse(saved) : [];
+
+    if (!saved) {
+      return [];
+    }
+
+    const parsedItems = JSON.parse(saved);
+
+    return parsedItems.map((item: GroceryItem) => ({
+      ...item,
+      completed: item.completed ?? false,
+    }));
   });
 
   const [editingIndex, setEditingIndex] = useState<string | null>(null);
@@ -32,11 +43,20 @@ export default function FocusedList({ listId, listName, onReturn }: Props) {
       {
         id: crypto.randomUUID(),
         value: name,
+        completed: false,
       },
     ]);
   };
   const handleRemove = (id: string) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const handleToggleItem = (id: string) => {
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, completed: !item.completed } : item
+      )
+    );
   };
 
   const handleSaveEdit = (id: string, newValue: string) => {
@@ -101,6 +121,8 @@ export default function FocusedList({ listId, listName, onReturn }: Props) {
               value={item.value}
               onRemove={() => handleRemove(item.id)}
               onEdit={() => handleEdit(item.id)}
+              completed={item.completed}
+              onToggle={() => handleToggleItem(item.id)}
             />
           )
         )}

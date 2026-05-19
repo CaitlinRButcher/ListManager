@@ -1,6 +1,6 @@
 import './App.css';
 import { useState, useEffect } from 'react';
-import NewListButton from './NewList';
+import NewListButton from './NewList/NewList.tsx';
 import FocusedList from './FocusedList/index.tsx';
 
 type Props = {

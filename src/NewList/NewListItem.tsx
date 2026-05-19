@@ -27,8 +27,8 @@ export default function NewListItem({ onCreate }: Props) {
           value={name}
           onChange={(e) => setName(e.target.value)}
         ></input>
-        <button className="new-list-button" type="submit">
-          + New Item
+        <button className="new-list-item-button" type="submit">
+          Add
         </button>
       </form>
     </>

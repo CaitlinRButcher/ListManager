@@ -11,3 +11,7 @@
 .edit-list-item {
   margin-right: 15px;
 }
+.item.completed span {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
