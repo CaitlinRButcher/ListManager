@@ -1,5 +1,5 @@
 import { useState } from 'react';
-
+import './index.scss';
 type Props = {
   onCreate: (name: string) => void;
 };
@@ -21,15 +21,17 @@ export default function NewListItem({ onCreate }: Props) {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Item Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        ></input>
-        <button className="new-list-item-button" type="submit">
-          Add
-        </button>
+        <div className="new-item-actions">
+          <input
+            type="text"
+            placeholder="Item Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          ></input>
+          <button className="new-list-item-button" type="submit">
+            Add
+          </button>
+        </div>
       </form>
     </>
   );

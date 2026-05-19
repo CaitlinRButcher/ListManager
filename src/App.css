@@ -207,3 +207,9 @@
 .new-list-container {
   margin: 10px;
 }
+.list-menu-actions {
+  align-items: center;
+  flex-direction: row;
+  display: flex;
+  gap: 20px;
+}

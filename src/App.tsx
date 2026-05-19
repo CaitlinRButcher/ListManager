@@ -2,6 +2,7 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import NewListButton from './NewList/NewList.tsx';
 import FocusedList from './FocusedList/index.tsx';
+import HistoryPage from './History/index.tsx';
 
 type Props = {
   id: string;
@@ -11,18 +12,43 @@ type Lists = {
   id: string;
   value: string;
 };
+type GroceryItem = {
+  id: string;
+  value: string;
+  completed: boolean;
+};
+
+type GroceryItems = GroceryItem[];
+
+type CompletedListItem = {
+  id: string;
+  value: string;
+};
+
+type CompletedList = {
+  id: string;
+  originalListId: string;
+  name: string;
+  completedAt: string;
+  items: CompletedListItem[];
+};
 
 export default function App({ id }: Props) {
   const listStorageKey = `list-${id}`;
+  const completedListStorageKey = `completed-list-${id}`;
   const [lists, setLists] = useState<Lists[]>(() => {
     const saved = localStorage.getItem(listStorageKey);
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [completedLists, setCompletedLists] = useState<CompletedList[]>(() => {
+    const saved = localStorage.getItem(completedListStorageKey);
     return saved ? JSON.parse(saved) : [];
   });
   const [openListId, setOpenListId] = useState<string | null>(null);
   const [editingIndex, setEditingIndex] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState('');
   const openList = lists.find((e) => e.id === openListId);
-
+  const [showHistory, setShowHistory] = useState(false);
   const handleCreateList = (name: string): void => {
     setLists((prev) => [
       ...prev,
@@ -37,6 +63,7 @@ export default function App({ id }: Props) {
   };
   const handleReturn = () => {
     setOpenListId(null);
+    setShowHistory(false);
   };
 
   const handleRemove = (id: string) => {
@@ -69,59 +96,120 @@ export default function App({ id }: Props) {
     setEditingItem(item.value);
   };
 
+  const handleCompleteList = (
+    listId: string,
+    listName: string,
+    items: GroceryItem[]
+  ) => {
+    const completedList: CompletedList = {
+      id: crypto.randomUUID(),
+      originalListId: listId,
+      name: listName,
+      completedAt: new Date().toISOString(),
+      items: items.map((item) => ({
+        id: crypto.randomUUID(),
+        value: item.value,
+      })),
+    };
+    setCompletedLists((prev) => [completedList, ...prev]);
+    setLists((prev) => prev.filter((list) => list.id !== listId));
+    localStorage.removeItem(`items-${listId}`);
+    setOpenListId(null);
+  };
+
+  const handleCreateListFromHistory = (
+    listName: string,
+    itemValues: string[]
+  ) => {
+    const newList = {
+      id: crypto.randomUUID(),
+      value: listName,
+    };
+
+    const newItems: GroceryItem[] = itemValues.map((value) => ({
+      id: crypto.randomUUID(),
+      value: value,
+      completed: false,
+    }));
+
+    setLists((prev) => [...prev, newList]);
+    localStorage.setItem(`items-${newList.id}`, JSON.stringify(newItems));
+    setShowHistory(false);
+    setOpenListId(newList.id);
+  };
   useEffect(() => {
     localStorage.setItem(listStorageKey, JSON.stringify(lists));
   }, [listStorageKey, lists]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      completedListStorageKey,
+      JSON.stringify(completedLists)
+    );
+  }, [completedListStorageKey, completedLists]);
+  if (openListId !== null && openList) {
+    return (
+      <FocusedList
+        listId={openList.id}
+        listName={openList.value}
+        onReturn={handleReturn}
+        onCompleteList={handleCompleteList}
+      />
+    );
+  }
+  if (openListId !== null && !openList) {
+    return <button onClick={handleReturn}>Go Back</button>;
+  }
+
+  if (showHistory) {
+    return (
+      <HistoryPage
+        completedLists={completedLists}
+        onReturn={() => setShowHistory(false)}
+        onCreateListFromHistory={handleCreateListFromHistory}
+      />
+    );
+  }
+
   return (
-    <>
-      {openListId === null ? (
-        <div className="new-list-container">
-          <NewListButton onCreateList={handleCreateList} />
-          {lists.length > 0 && (
-            <ul className="list-menu">
-              {lists.map((list) => (
-                <li className="lists-container" key={list.id}>
-                  <div onClick={() => onOpenList(list.id)}>
-                    {editingIndex === list.id ? (
-                      <input
-                        value={editingItem}
-                        onChange={(e) => setEditingItem(e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                        onBlur={() => handleSaveEdit(list.id, editingItem)}
-                        autoFocus
-                      />
-                    ) : (
-                      list.value
-                    )}
-                  </div>
+    <div className="new-list-container">
+      <div className="list-menu-actions">
+        <NewListButton onCreateList={handleCreateList} />
+        <button className="history-button" onClick={() => setShowHistory(true)}>
+          View Completed Lists
+        </button>
+      </div>
+      {lists.length > 0 && (
+        <ul className="list-menu">
+          {lists.map((list) => (
+            <li className="list-container" key={list.id}>
+              <div onClick={() => onOpenList(list.id)}>
+                {editingIndex === list.id ? (
+                  <input
+                    value={editingItem}
+                    onChange={(e) => setEditingItem(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    onBlur={() => handleSaveEdit(list.id, editingItem)}
+                    autoFocus
+                  />
+                ) : (
+                  list.value
+                )}
+              </div>
+              <button className="edit-list" onClick={() => handleEdit(list.id)}>
+                Edit List Name
+              </button>
 
-                  <button
-                    className="edit-list"
-                    onClick={() => handleEdit(list.id)}
-                  >
-                    Edit List Name
-                  </button>
-
-                  <button
-                    className="delete-list"
-                    onClick={() => handleRemove(list.id)}
-                  >
-                    Delete List
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      ) : openList ? (
-        <FocusedList
-          listId={openList.id}
-          listName={openList.value}
-          onReturn={handleReturn}
-        />
-      ) : (
-        <button onClick={handleReturn}>Go Back</button>
+              <button
+                className="delete-list"
+                onClick={() => handleRemove(list.id)}
+              >
+                Delete List
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
-    </>
+    </div>
   );
 }

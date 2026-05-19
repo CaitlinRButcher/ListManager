@@ -7,6 +7,11 @@ type Props = {
   listId: string;
   listName: string;
   onReturn: () => void;
+  onCompleteList: (
+    listId: string,
+    listName: string,
+    items: GroceryItem[]
+  ) => void;
 };
 
 type GroceryItem = {
@@ -15,11 +20,15 @@ type GroceryItem = {
   completed: boolean;
 };
 
-export default function FocusedList({ listId, listName, onReturn }: Props) {
+export default function FocusedList({
+  listId,
+  listName,
+  onReturn,
+  onCompleteList,
+}: Props) {
   const storageKey = `items-${listId}`;
   const [items, setItems] = useState<GroceryItem[]>(() => {
     const saved = localStorage.getItem(storageKey);
-
     if (!saved) {
       return [];
     }
@@ -34,7 +43,8 @@ export default function FocusedList({ listId, listName, onReturn }: Props) {
 
   const [editingIndex, setEditingIndex] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState('');
-
+  const allItemsCompleted =
+    items.length > 0 && items.every((item) => item.completed);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleCreate = (name: string): void => {
@@ -94,7 +104,7 @@ export default function FocusedList({ listId, listName, onReturn }: Props) {
       <div>
         <NewListItem onCreate={handleCreate} />
       </div>
-      <ul>
+      <ul className="list-items">
         {items.map((item) =>
           editingIndex === item.id ? (
             <li key={item.id} className="list-item">
@@ -127,6 +137,12 @@ export default function FocusedList({ listId, listName, onReturn }: Props) {
           )
         )}
       </ul>
+      <button
+        disabled={!allItemsCompleted}
+        onClick={() => onCompleteList(listId, listName, items)}
+      >
+        Complete List
+      </button>
     </>
   );
 }

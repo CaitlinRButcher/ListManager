@@ -24,13 +24,14 @@ export default function ListItem({
       style={{ cursor: 'pointer' }}
       onBlur={onSaveEdit}
     >
-      <span className="item-name">{value}</span>
       <input
         type="checkbox"
         checked={completed}
         onClick={(e) => e.stopPropagation()}
         onChange={onToggle}
       />
+      <span className="item-name">{value}</span>
+
       {onEdit && (
         <button
           className="edit-list-item"
