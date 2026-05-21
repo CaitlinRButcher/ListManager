@@ -3,34 +3,10 @@ import { useState, useEffect } from 'react';
 import NewListButton from './NewList/NewList.tsx';
 import FocusedList from './FocusedList/index.tsx';
 import HistoryPage from './History/index.tsx';
+import type { CompletedList, GroceryItem } from './types.ts';
 
 type Props = {
   id: string;
-};
-
-type Lists = {
-  id: string;
-  value: string;
-};
-type GroceryItem = {
-  id: string;
-  value: string;
-  completed: boolean;
-};
-
-type GroceryItems = GroceryItem[];
-
-type CompletedListItem = {
-  id: string;
-  value: string;
-};
-
-type CompletedList = {
-  id: string;
-  originalListId: string;
-  name: string;
-  completedAt: string;
-  items: CompletedListItem[];
 };
 
 export default function App({ id }: Props) {

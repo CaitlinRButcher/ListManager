@@ -1,18 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import CompletedListCard from './CompletedListCard';
-type CompletedListItem = {
-  id: string;
-  value: string;
-};
-
-type CompletedList = {
-  id: string;
-  originalListId: string;
-  name: string;
-  completedAt: string;
-  items: CompletedListItem[];
-};
-
+import type { CompletedList } from '../types';
 type Props = {
   completedLists: CompletedList[];
   onReturn: () => void;

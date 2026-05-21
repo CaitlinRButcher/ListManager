@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import NewListItem from '../NewList/NewListItem';
 import './index.scss';
 import ListItem from '../ListItem/index';
+import type { GroceryItem } from '../types';
 
 type Props = {
   listId: string;
@@ -12,12 +13,6 @@ type Props = {
     listName: string,
     items: GroceryItem[]
   ) => void;
-};
-
-type GroceryItem = {
-  id: string;
-  value: string;
-  completed: boolean;
 };
 
 export default function FocusedList({
