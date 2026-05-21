@@ -1,29 +1,21 @@
 import { useState } from 'react';
+import { FaRegTrashAlt } from 'react-icons/fa';
+import type { CompletedList } from '../types';
+import './index.scss';
 
 type CompletedListCardProps = {
   completedList: CompletedList;
   onCreateListFromHistory: (listName: string, itemValues: string[]) => void;
-};
-type CompletedList = {
-  id: string;
-  originalListId: string;
-  name: string;
-  completedAt: string;
-  items: CompletedListItem[];
-};
-type CompletedListItem = {
-  id: string;
-  value: string;
+  onDeleteCompletedList: (id: string) => void;
 };
 
 export default function CompletedListCard({
   completedList,
   onCreateListFromHistory,
+  onDeleteCompletedList,
 }: CompletedListCardProps) {
   const [name, setName] = useState<string>('');
-  const [selectedItemIds, setSelectedItemIds] = useState<string[]>(
-    completedList.items.map((item) => item.id)
-  );
+  const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
   function handleToggleSelectedItem(id: string) {
     setSelectedItemIds((prevSelectedIds) =>
       prevSelectedIds.includes(id)
@@ -36,7 +28,15 @@ export default function CompletedListCard({
     .map((item) => item.value);
   return (
     <section>
-      <h2>{completedList.name}</h2>
+      <div className="completed-list-header">
+        <h3>{completedList.name}</h3>
+        <button
+          className="delete-completed-list-button"
+          onClick={() => onDeleteCompletedList(completedList.id)}
+        >
+          <FaRegTrashAlt />
+        </button>
+      </div>
 
       <p>
         Completed on {new Date(completedList.completedAt).toLocaleDateString()}

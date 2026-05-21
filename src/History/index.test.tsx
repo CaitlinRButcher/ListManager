@@ -162,8 +162,6 @@ describe('CompletedListCard', () => {
     expect(screen.getByRole('checkbox', { name: /eggs/i })).toBeChecked();
     expect(screen.getByRole('checkbox', { name: /bread/i })).not.toBeChecked();
     expect(onCreateListFromHistory).toHaveBeenCalledTimes(1);
-    expect(onCreateListFromHistory).toHaveBeenCalledWith('Breakfast', [
-      'Eggs',
-    ]);
+    expect(onCreateListFromHistory).toHaveBeenCalledWith('Breakfast', ['Eggs']);
   });
 });

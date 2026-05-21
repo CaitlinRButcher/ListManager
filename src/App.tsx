@@ -4,7 +4,6 @@ import NewListButton from './NewList/NewList.tsx';
 import FocusedList from './FocusedList/index.tsx';
 import HistoryPage from './History/index.tsx';
 import type { CompletedList, GroceryItem } from './types.ts';
-
 type Props = {
   id: string;
 };
@@ -93,6 +92,10 @@ export default function App({ id }: Props) {
     setOpenListId(null);
   };
 
+  const onDeleteCompletedList = (id: string) => {
+    setCompletedLists((prev) => prev.filter((item) => item.id !== id));
+  };
+
   const handleCreateListFromHistory = (
     listName: string,
     itemValues: string[]
@@ -143,6 +146,7 @@ export default function App({ id }: Props) {
         completedLists={completedLists}
         onReturn={() => setShowHistory(false)}
         onCreateListFromHistory={handleCreateListFromHistory}
+        onDeleteCompletedList={onDeleteCompletedList}
       />
     );
   }

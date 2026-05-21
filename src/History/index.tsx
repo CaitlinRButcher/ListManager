@@ -5,12 +5,14 @@ type Props = {
   completedLists: CompletedList[];
   onReturn: () => void;
   onCreateListFromHistory: (listName: string, itemValues: string[]) => void;
+  onDeleteCompletedList: (id: string) => void;
 };
 
 export default function HistoryPage({
   completedLists,
   onReturn,
   onCreateListFromHistory,
+  onDeleteCompletedList,
 }: Props) {
   return (
     <div>
@@ -26,6 +28,7 @@ export default function HistoryPage({
             key={completedList.id}
             completedList={completedList}
             onCreateListFromHistory={onCreateListFromHistory}
+            onDeleteCompletedList={onDeleteCompletedList}
           />
         ))
       )}

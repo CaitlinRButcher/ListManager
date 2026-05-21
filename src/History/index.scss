@@ -1,0 +1,11 @@
+.completed-list-header {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: center;
+}
+.delete-completed-list-button {
+  padding: 5px;
+  width: fit-content;
+  height: fit-content;
+}
